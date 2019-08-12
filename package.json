@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "my-vue-library": "file:../my-vue-library/my-vue-library-0.1.0.tgz",
     "vue": "^2.6.10"
   },
   "devDependencies": {
