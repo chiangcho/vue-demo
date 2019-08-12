@@ -1,5 +1,7 @@
 # vue-demo
 
+引入vue-components-demo中`npm pack`的本地包，并在main.js中进行引入，在App.vue进行使用
+
 ## Project setup
 ```
 npm install
