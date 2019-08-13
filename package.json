@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
-    "my-vue-library": "file:../my-vue-library/my-vue-library-0.1.0.tgz",
-    "vue": "^2.6.10"
+    "vue": "^2.6.10",
+    "xcom-components": "file:../my-vue-library/xcom-components-0.1.0.tgz"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",
