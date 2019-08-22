@@ -1,12 +1,12 @@
 {
   "name": "vue-demo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "postversion": "git push --follow-tags" 
+    "postversion": "git push --follow-tags"
   },
   "dependencies": {
     "core-js": "^2.6.5",
