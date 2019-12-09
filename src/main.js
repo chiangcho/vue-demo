@@ -1,12 +1,17 @@
-import Vue from 'vue'
+import Vue from 'vue/dist/vue.esm.js'
+import './mock.js'
 import App from './App.vue'
 // import xcom from 'xcom-components'
 import {HelloWorld} from 'xcom-components'
 import 'xcom-components/dist/xcom-components.css'
 
+
+
+
 Vue.config.productionTip = false
 // Vue.use(xcom)
 Vue.component('HelloWorld',HelloWorld)
+
 
 new Vue({
   render: h => h(App),
