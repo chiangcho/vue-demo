@@ -1,0 +1,236 @@
+= vue组件化开发
+
+下面是从创建一个空项目开始，介绍组件化开发的配置及需要开发的内容
+
+*安装vue-cli*
+[source]
+----
+//安装3.*
+npm i -g @vue/cli
+----
+
+*使用vue cli创建一个空项目*
+[source]
+----
+vue create xcom-ui
+----
+
+== 打包配置
+通过vue-cli的命令进行打包，未直接配置webpack配置文件,主要是修改 ``package.json`` 文件，包括 ``script`` , ``files`` , ``main`` , ``style`` , ``private`` 
+
+添加``script` 
+[source,js]
+----
+"build-lib": "vue-cli-service build --target lib --name xcom-components ./src/components/index.js"
+----
+* ``target``有一些可选项，这里需要指定为``lib``
+* ``name`` 指定模块名称，需要与package中的name一致
+* ``./src/components/index.js``为入口，在该js中定义要export的组件
+
+``files``设置要打包的文件，``publish``时只会发布``files``里指定的文件
+[source,js]
+----
+"files": [
+    "dist",
+    "src/components",
+    "src/api"
+  ],
+----
+
+通过``main``设置入口``js``,指定编译后的js，使用vue cli编译的文件通常在``dist/<package-name>.common.js``
+[source,js]
+----
+"main":"./dist/xcom-components.common.js",
+----
+
+设置``style``,vue cli编译后的样式，通常为``dist/<package-name>.css``
+[source,js]
+----
+"style": "./dist/xcom-components.css"
+----
+
+修改``private``为``false``
+[source,js]
+----
+"private": false,
+----
+
+添加私有仓库地址
+[source,js]
+----
+"publishConfig": {
+    "registry": "http://your-host:8081/repository/npm-private/"
+}
+----
+内联css设置
+
+默认css是会单独打成一个独立的css文件，可以让其包含在js中，则在``vue.config.js``中增加。这步跳过即可。
+[source,js]
+----
+module.exports = {
+    ...
+    css: { extract: false }
+    ...
+}
+----
+
+== 编写组件
+api相关代码放在``src/api``.
+
+组件源码放在``src/components``目录，针对每个组件在该目录下建立一个独立的目录，每个组件包含一个``.vue``和一个``index.js``文件，在``components``下建立一个总的``index.js``入口文件（即前面``script``中指定的入口文件)。
+
+下面分别介绍单组件``.vue``和``index.js``以及总入口``index.js``文件的编写规则。
+
+* **<package-name>/<package-name>.vue**
+
+组件本身的开发没有任何区别
+    
+* **<package-name>/index.js**
+    
+在单个组件目录下建立``index.js``文件，内容如下
+[source,js]
+----
+import HelloWorld from './HelloWorld.vue';
+//增加下面代码，在按需加载时，可以使用Vue.use(HelloWorld)注册组件，也可以直接使用Vue.
+//HelloWorld.install = function (Vue) {
+//    Vue.components(HelloWorld.name, HelloWorld);
+//};
+export default HelloWorld;
+----
+    
+``index.js``
+
+位于``src/components/``目录下
+[source,js]
+----
+// 导入所有组件,将每个组件逐一导入
+import HelloWorld from './helloworld'
+
+//将所有组件定义在components数组中
+const components = [
+  HelloWorld
+]
+
+const install = function(vue) {
+  /* istanbul ignore if */
+  if (install.installed) return;
+  /*eslint-disable*/
+  components.map((component) => {
+    vue.component(component.name, component); //component.name 此处使用到组件vue文件中的 name 属性
+  });
+};
+/* istanbul ignore if */
+if (typeof window !== 'undefined' && window.Vue) {
+  install(window.Vue);
+};
+
+//导出install及所有组件(此处用于按需加载)
+export {
+  install,
+  HelloWorld
+}
+//导出install及所有组件
+export default {
+  install,
+  HelloWorld
+}
+----
+
+== 执行脚本
+
+构建
+[source]
+----
+npm run build-lib
+----
+
+发布到npm仓库
+[source]
+----
+npm publish
+----
+
+== 本地测试
+可以使用``pack``命令打一个本地的组件包,在工程根目录下的一个压缩包
+[source]
+----
+npm pack
+----
+
+然后组件使用方在工程根目录下安装本地组件,安装后即可使用
+[source,js]
+----
+npm i F:\git\my-vue-library\xcom-components-0.1.0.tgz
+----
+
+== 按需加载
+
+添加``babel-plugin-component``插件
+[source,js]
+----
+npm i babel-plugin-component -D
+----
+
+配置``.babelrc``，在项目的根目录下创建一个 ``.babelrc`` 的文件,也可以将以下内容添加到``babel.config.js``中，将``plugins``与``presets``并列
+[source,js]
+----
+{
+  "plugins": [
+    [
+      "component",
+      {
+        // 组件库的名字，需要和 package.json 里的 name 相同
+        "libraryName": "xcom-<component-name>",
+        // 存放组件的文件夹，如果不想配置此项，默认文件夹的名字为 lib
+        "libDir": "src/components",
+      }
+    ]
+  ]
+}
+
+----
+
+修改整体的入口js文件，增加export部分，跟export default一样
+[source,js]
+----
+export {
+  install,
+  HelloWorld
+}
+
+export default {
+  install,
+  HelloWorld
+}
+
+----
+
+== 按需加载使用
+组件的使用方，不需要特殊设置，只需要部分import即可,例如在``main.js``中
+[source,js]
+----
+import {HelloWorld} from 'xcom-components'
+
+Vue.component('HelloWorld',HelloWorld)
+//也可以使用组件的名字
+//Vue.component(HelloWorld.name,HelloWorld)
+
+//如果组件下的index.js中定义了install方法，则也可以使用Vue.use
+//Vue.use(HelloWorld)
+----
+
+==  目录规范
+
+|===
+|目录 |说明
+
+|src/components/组件名 |存放组件化的页面
+|src/api/|请求后台接口
+|src/components/lib|对外发布按需加载组件（结构复杂的模块，可建立独立的lib目录，放置对外发布的组件声明
+
+|===
+  
+         
+        
+
+
