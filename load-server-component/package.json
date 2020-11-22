@@ -12,7 +12,7 @@
     "core-js": "^2.6.5",
     "mockjs": "^1.1.0",
     "vue": "^2.6.10",
-    "xcom-components": "file:../vue-components-demo/xcom-components-0.1.0.tgz"
+    "xcom-components": "file:./other_files/xcom-components-0.1.7.tgz"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",
