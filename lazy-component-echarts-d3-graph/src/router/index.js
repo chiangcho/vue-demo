@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import { lazyLoadComponent } from '../views/ImportUtils'
 const Echarts = () => import(/* webpackChunkName: "charts" */ '../views/Echarts.vue')
 const Echarts2 = () => import(/* webpackChunkName: "charts2" */ '../views/Echarts2.vue')
+const EchartsMap = () => import(/* webpackChunkName: "chartsmap" */ '../views/EchartsMap.vue')
 // import JobDefination from '../views/JobDefination'
 // const about2 = Promise.resolve(about)
 // const about2 = new Promise((resolve, reject) => {
@@ -58,7 +59,13 @@ const routes = [
     path: '/charts3',
     name: 'Echarts3',
     component: echarts
+  },
+  {
+    path: '/echartsmap',
+    name: 'EchartsMap',
+    component: EchartsMap
   }
+
 ]
 
 const router = new VueRouter({

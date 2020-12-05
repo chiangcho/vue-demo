@@ -6,7 +6,9 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
       <router-link to="/graph">graph</router-link> |
-      <router-link to="/charts">echarts</router-link>
+      <router-link to="/charts">echarts</router-link>|
+      <router-link to="/echartsmap">echartsmap</router-link>
+
     </div>
     <router-view/>
   </div>
