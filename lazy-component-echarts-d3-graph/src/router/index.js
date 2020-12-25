@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import { lazyLoadComponent } from '../views/ImportUtils'
+import { Dashboard, BoardConfig, CategoryConfig, DatasetConfig, DatasourceConfig, WidgetConfig } from 'xcom-cboard'
+const cboard = () => import(/* webpackChunkName: "cboard" */ '../views/cboard.vue')
 const Echarts = () => import(/* webpackChunkName: "charts" */ '../views/Echarts.vue')
 const Echarts2 = () => import(/* webpackChunkName: "charts2" */ '../views/Echarts2.vue')
 const EchartsMap = () => import(/* webpackChunkName: "chartsmap" */ '../views/EchartsMap.vue')
@@ -64,8 +66,42 @@ const routes = [
     path: '/echartsmap',
     name: 'EchartsMap',
     component: EchartsMap
+  },
+  {
+    path: '/dashboard/:name/:id',
+    name: 'dashboard',
+    component: Dashboard
+  },
+  {
+    path: '/config/board',
+    name: 'BoardConfig',
+    component: BoardConfig
+  },
+  {
+    path: '/config/category',
+    name: 'CategoryConfig',
+    component: CategoryConfig
+  },
+  {
+    path: '/config/dataset',
+    name: 'DatasetConfig',
+    component: DatasetConfig
+  },
+  {
+    path: '/config/datasource',
+    name: 'DatasourceConfig',
+    component: DatasourceConfig
+  },
+  {
+    path: '/config/widget',
+    name: 'WidgetConfig',
+    component: WidgetConfig
+  },
+  {
+    path: '/cboard',
+    name: 'cboard',
+    component: cboard
   }
-
 ]
 
 const router = new VueRouter({
