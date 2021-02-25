@@ -1,0 +1,104 @@
+<html>
+<header>
+<style>
+html{
+    height: 100%;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding:0px;
+    margin:0px;
+}
+.header{
+   /* 我们希望 header 采用固定的高度，只占用必须的空间 */
+   /* 0 flex-grow, 0 flex-shrink, auto flex-basis */
+   flex: 0 0 auto;
+   background-color: antiquewhite;
+   display: block;
+   height: 30px;
+}
+
+.main-content{
+   /* 将 flex-grow 设置为1，该元素会占用全部可使用空间 
+      而其他元素该属性值为0，因此不会得到多余的空间*/
+   /* 1 flex-grow, 0 flex-shrink, auto flex-basis */
+   flex: 1 1 auto;
+   display: flex;
+   flex-direction: row;
+   background-color:chartreuse;
+   overflow: auto;
+}
+
+.main-content-left{
+   /* 将 flex-grow 设置为1，该元素会占用全部可使用空间 
+      而其他元素该属性值为0，因此不会得到多余的空间*/
+   /* 1 flex-grow, 0 flex-shrink, auto flex-basis */
+   flex: 0 0 auto;
+   background-color:beige;
+   width: 50px;
+}
+
+.main-content-right{
+   /* 将 flex-grow 设置为1，该元素会占用全部可使用空间 
+      而其他元素该属性值为0，因此不会得到多余的空间*/
+   /* 1 flex-grow, 0 flex-shrink, auto flex-basis */
+   flex: 1 1 auto;
+   background-color: aquamarine;
+   overflow: auto;
+}
+
+.main-content-right-content {
+    height: 700px;
+    margin:40px;
+    background-color:lightcyan;
+}
+
+
+
+footer{
+   /* 和 header 一样，footer 也采用固定高度*/
+   /* 0 flex-grow, 0 flex-shrink, auto flex-basis */
+   flex: 0 0 auto;
+   background-color: burlywood;
+   display: block;
+   height: 30px;
+}
+
+.wrap {
+    height: 600px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top:20px;
+    left:30px;
+}
+</style>
+<script>
+   document.addEventListener('paste', function (evt) {
+  clipdata = evt.clipboardData || window.clipboardData;
+  console.log(clipdata.getData('text/plain'));
+  console.log(clipdata.getData('text/rtf'));
+});
+</script>
+</header>
+<body>
+    <div class="wrap">
+    <div class="header"></div>
+    <section class="main-content">
+        <div class="main-content-left"></div>
+        <div class="main-content-right">
+            <div class="main-content-right-content">
+
+            </div>
+
+        </div>
+    </section>
+    <footer></footer>
+</div>
+
+</body>
+</html>
