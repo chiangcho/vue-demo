@@ -19,6 +19,8 @@
     "@vue/cli-plugin-eslint": "^3.10.0",
     "@vue/cli-service": "^3.10.0",
     "babel-eslint": "^10.0.1",
+    "babel-plugin-component": "^1.1.1",
+    "babel-plugin-dynamic-import-source": "E:\\code\\babel-plugin-dynamic-import-node\\babel-plugin-dynamic-import-source-v1.0.1.tgz",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "vue-template-compiler": "^2.6.10"
