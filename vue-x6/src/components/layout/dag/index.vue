@@ -1,45 +1,87 @@
 <template>
-  <el-container>
-    <el-aside>
+  <div class="workspace">
+    <div class="workspace-left">
+      <div class="canvasToolbar">
+        <div class="x6-toolbar">
+          <div class="x6-toolbar-title">组件库</div>
+        </div>
+      </div>
       <div
         :id="barId"
-        style="width: 300px; height: 100vh; position: relative"
+        style="width: 100%; height: 100%; position: relative"
       ></div>
-    </el-aside>
-    <el-main class="x6-pannel">
-      <div class="canvasToolbar">
-        <div class="x6-toolbar x6-toolbar-hover-effect">
-          <div class="x6-toolbar-content">
-            <div class="x6-toolbar-content-inner">
-              <div class="x6-toolbar-group">
-                <div class="x6-toolbar-item" @click="exportPng">
-                  <i class="el-icon-download x6-toolbar-item-icon" />
+    </div>
+    <div class="workspace-right">
+      <div class="x6-pannel">
+        <div class="canvasToolbar">
+          <div class="x6-toolbar">
+            <div class="x6-toolbar-content">
+              <div class="x6-toolbar-content-inner">
+                <div class="x6-toolbar-group">
+                  <div class="x6-toolbar-item" @click="exportPng">
+                    <i class="el-icon-download x6-toolbar-item-icon" />
+                  </div>
+                  <div class="x6-toolbar-item" @click="centerContent">
+                    <i class="el-icon-rank x6-toolbar-item-icon" />
+                  </div>
+                  <div class="x6-toolbar-item" @click="getJSONData">
+                    <i class="el-icon-copy-document x6-toolbar-item-icon" />
+                  </div>
                 </div>
-                <div class="x6-toolbar-item" @click="centerContent">
-                  <i class="el-icon-rank x6-toolbar-item-icon" />
-                </div>
-                <div class="x6-toolbar-item" @click="getJSONData">
-                  <i class="el-icon-copy-document x6-toolbar-item-icon" />
-                </div>
-              </div>
-              <div class="x6-toolbar-group">
-                <div class="x6-toolbar-item" @click="runHandle">
-                  <i class="el-icon-video-play x6-toolbar-item-icon" />
-                </div>
-                <div class="x6-toolbar-item" @click="stopHandle">
-                  <i class="el-icon-video-pause x6-toolbar-item-icon" />
+                <div class="x6-toolbar-group">
+                  <div class="x6-toolbar-item" @click="runHandle">
+                    <i class="el-icon-video-play x6-toolbar-item-icon" />
+                  </div>
+                  <div class="x6-toolbar-item" @click="stopHandle">
+                    <i class="el-icon-video-pause x6-toolbar-item-icon" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <div id="dagContainer" class="dagContainer">
+          <div :id="id"></div>
+          <div class="app-minimap" id="minimapId" />
+          <ul class="handler">
+            <el-tooltip openDelay="500" content="放大" placement="left">
+              <li class="item" @click="zoomIn">
+                <i class="el-icon-zoom-in"></i>
+              </li>
+            </el-tooltip>
+            <el-tooltip openDelay="500" content="缩小" placement="left">
+              <li class="item" @click="zoomOut">
+                <i class="el-icon-zoom-out"></i>
+              </li>
+            </el-tooltip>
+            <el-tooltip openDelay="500" content="实际大小" placement="left">
+              <li class="item" @click="resetSize">
+                <i class="el-icon-c-scale-to-original" />
+              </li>
+            </el-tooltip>
+            <el-tooltip openDelay="500" content="适应画布" placement="left">
+              <li class="item" @click="zoomToFit">
+                <i class="el-icon-s-grid"></i>
+              </li>
+            </el-tooltip>
+            <el-tooltip openDelay="500" content="居中" placement="left">
+              <li class="item" @click="centerContent">
+                <i class="el-icon-aim"></i>
+              </li>
+            </el-tooltip>
+
+            <li class="item"><i class="el-icon-full-screen"></i></li>
+          </ul>
+        </div>
       </div>
-      <div id="dagContainer" class="dagContainer">
-        <div :id="id"></div>
-        <div class="app-minimap" id="minimapId" />
+      <div class="config-pannel">
+        <el-tabs v-model="activeName" type="border-card">
+          <el-tab-pane label="属性配置" name="first">属性配置</el-tab-pane>
+          <el-tab-pane label="全局属性" name="second">全局属性</el-tab-pane>
+        </el-tabs>
       </div>
-    </el-main>
-  </el-container>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -67,6 +109,8 @@ export default {
       graph: {},
       stencil: {},
       Shape: Shape,
+      selectLine: [],
+      activeName: "first",
     };
   },
   methods: {
@@ -87,6 +131,10 @@ export default {
         panning: {
           enabled: true,
           eventTypes: ["leftMouseDown", "mouseWheel"],
+        },
+        scroller: {
+          enabled: true,
+          pannable: true,
         },
         mousewheel: {
           enabled: true,
@@ -109,8 +157,10 @@ export default {
           },
         },
         connecting: {
-          snap: true, //连线的过程中距离节点或者连接桩 50px 时会触发自动吸附，
-          allowMulti: false,
+          snap: {
+            radius: 20, //设置自动吸附距离
+          }, //连线的过程中距离节点或者连接桩 50px 时会触发自动吸附，
+          allowMulti: true,
           allowBlank: false, //是否允许连接到画布空白位置的点
           allowLoop: false, //是否允许创建循环连线
           highlight: true,
@@ -123,7 +173,7 @@ export default {
           connector: "algo-edge",
         },
         snapline: true,
-
+        history: true,
         grid: {
           size: 10, // 网格大小 10px
           visible: true, // 渲染网格背景
@@ -135,8 +185,9 @@ export default {
           multiple: true,
           rubberEdge: true,
           rubberNode: true,
-          modifiers: "shift",
+          modifiers: "ctrl", //按住ctrl点击鼠标框选
           rubberband: true,
+          showNodeSelectionBox: true,
         },
         minimap: {
           enabled: true,
@@ -156,7 +207,7 @@ export default {
         groups: [
           {
             name: "group1",
-            title: "算子",
+            title: "通用组件",
           },
         ],
       });
@@ -289,14 +340,12 @@ export default {
         console.log("mouse mouseenter");
         this.changePortsVisible(true);
         // 添加删除
-        const type = node.store.data.type;
-        const x = type === "taskNode" ? 300 : 60;
         node.addTools({
           name: "button-remove",
           args: {
             x: 0,
             y: 0,
-            offset: { x: x, y: 10 },
+            offset: { x: 6, y: 5 },
           },
         });
       });
@@ -305,6 +354,103 @@ export default {
         this.changePortsVisible(false);
         // 移除删除
         node.removeTools();
+      });
+      this.graph.on("edge:mouseenter", ({ edge }) => {
+        edge.addTools([
+          {
+            name: "source-arrowhead",
+
+            args: {
+              tagName: "circle",
+              attrs: {
+                r: 6,
+                fill: "#ffa940",
+                strokeWidth: 0,
+                cursor: "move",
+              },
+            },
+          },
+          {
+            name: "target-arrowhead",
+            args: {
+              attrs: {
+                fill: "#3199FF",
+                cursor: "move",
+              },
+            },
+          },
+          {
+            name: "button-remove",
+            args: {
+              distance: -30,
+            },
+          },
+        ]);
+      });
+
+      this.graph.on("edge:mouseleave", ({ edge }) => {
+        edge.removeTools();
+      });
+      // 选择连接线(边)事件
+      this.graph.on("selection:changed", ({ added, removed }) => {
+        this.selectLine = added;
+        added.forEach((cell) => {
+          const args = { size: 12 };
+          cell.setAttrs({
+            line: {
+              sourceMarker: {
+                args,
+              },
+              targetMarker: {
+                args,
+              },
+              strokeWidth: 2,
+            },
+          });
+        });
+        removed.forEach((cell) => {
+          const args = { size: 8 };
+          cell.setAttrs({
+            line: {
+              sourceMarker: {
+                args,
+              },
+              targetMarker: {
+                args,
+              },
+              strokeWidth: 1,
+            },
+          });
+        });
+      });
+
+      //删除选中的内容
+      this.graph.bindKey(["Backspace", "Delete"], () => {
+        for (const item of this.graph.getSelectedCells()) {
+          item.remove();
+        }
+      });
+      this.graph.bindKey("ctrl+c", () => {
+        const cells = this.graph.getSelectedCells();
+        if (cells.length) {
+          this.graph.copy(cells);
+        }
+        return false;
+      });
+      this.graph.bindKey("ctrl+x", () => {
+        const cells = this.graph.getSelectedCells();
+        if (cells.length) {
+          this.graph.cut(cells);
+        }
+        return false;
+      });
+      this.graph.bindKey("ctrl+v", () => {
+        if (!this.graph.isClipboardEmpty()) {
+          const cells = this.graph.paste({ offset: 32 });
+          this.graph.cleanSelection();
+          this.graph.select(cells);
+        }
+        return false;
       });
     },
     runHandle() {
@@ -359,6 +505,20 @@ export default {
     centerContent() {
       this.graph.centerContent();
     },
+    zoomIn() {
+      this.graph.zoomTo(this.graph.zoom() + 0.1);
+    },
+    zoomOut() {
+      this.graph.zoomTo(this.graph.zoom() - 0.1);
+    },
+    zoomToFit() {
+      this.graph.zoomToFit();
+    },
+
+    resetSize() {
+      this.graph.zoomTo(1);
+    },
+
     getJSONData() {
       this.$message("按f12查看控制台");
       console.log(this.graph.toJSON());
@@ -368,16 +528,35 @@ export default {
     this.init();
   },
   destroyed() {
-    console.log(123);
     this.graph.dispose();
   },
 };
 </script>
 
 <style>
-/deep/ .x6-widget-stencil {
-  width: 300px;
-  /* height: 100vh - 100px; */
+.workspace {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.workspace-left {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-basis: 290px;
+  width: 290px;
+  max-height: calc(100vh - 48px);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.workspace-right {
+  display: flex;
+  flex-grow: 1;
+  align-items: stretch;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
 .canvasToolbar {
@@ -409,7 +588,18 @@ export default {
   flex: 1 1;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   overflow: hidden;
+}
+
+.x6-toolbar-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0px 10px;
 }
 
 .x6-toolbar-content-extras,
@@ -462,23 +652,59 @@ export default {
   flex-direction: row;
 }
 
-.el-container .x6-pannel {
-  padding: 0px;
-  overflow: hidden;
-}
-
-.dagContainer {
+.x6-pannel {
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  flex-grow: 1;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.config-pannel {
+  width: 290px;
+  min-width: 290px;
+}
+
+.dagContainer {
+  position: relative;
   background-color: #f7f7fa;
+  flex-grow: 1;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .app-minimap {
   position: absolute;
-  bottom: 140px;
-  right: 0px;
+  bottom: 20px;
+  right: 20px;
+}
+
+.handler {
+  position: absolute;
+  top: 61px;
+  right: 14px;
+  z-index: 99;
+  width: 32px;
+  margin: 0;
+  padding: 3px 0;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 16px;
+  list-style-type: none;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 3px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 1%);
+}
+
+.handler .item {
+  text-align: center;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.handler .item:hover {
+  background-color: dodgerblue;
+  color: #fff;
 }
 </style>

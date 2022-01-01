@@ -27,4 +27,13 @@ body {
   margin: 0px;
   overflow: hidden;
 }
+
+html,
+body,
+#app,
+.hello,
+.el-container,
+.el-main {
+  height: 100%;
+}
 </style>

@@ -4,7 +4,7 @@
       <el-header class="header">
         <div class="header-left">
           <div class="header-left-icon">
-            <i class="el-icon-s-grid" />
+            <i class="el-icon-share" style="font-size: 20px" />
           </div>
           <span class="header-left-title">批量建模</span>
         </div>
