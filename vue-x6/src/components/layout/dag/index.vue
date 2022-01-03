@@ -1,77 +1,20 @@
 <template>
   <div class="workspace">
     <div class="workspace-left">
-      <div class="canvasToolbar">
-        <div class="x6-toolbar">
-          <div class="x6-toolbar-title">组件库</div>
-        </div>
+      <div class="pannel-toolbar">
+        <div class="pannel-toolbar-title">组件库</div>
       </div>
-      <div
-        :id="barId"
-        style="width: 100%; height: 100%; position: relative"
-      ></div>
+      <div ref="componentWrapper" class="componentWrapper"></div>
     </div>
     <div class="workspace-right">
-      <div class="x6-pannel">
-        <div class="canvasToolbar">
-          <div class="x6-toolbar">
-            <div class="x6-toolbar-content">
-              <div class="x6-toolbar-content-inner">
-                <div class="x6-toolbar-group">
-                  <div class="x6-toolbar-item" @click="exportPng">
-                    <i class="el-icon-download x6-toolbar-item-icon" />
-                  </div>
-                  <div class="x6-toolbar-item" @click="centerContent">
-                    <i class="el-icon-rank x6-toolbar-item-icon" />
-                  </div>
-                  <div class="x6-toolbar-item" @click="getJSONData">
-                    <i class="el-icon-copy-document x6-toolbar-item-icon" />
-                  </div>
-                </div>
-                <div class="x6-toolbar-group">
-                  <div class="x6-toolbar-item" @click="runHandle">
-                    <i class="el-icon-video-play x6-toolbar-item-icon" />
-                  </div>
-                  <div class="x6-toolbar-item" @click="stopHandle">
-                    <i class="el-icon-video-pause x6-toolbar-item-icon" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="canvas-pannel">
+        <div class="pannel-toolbar">
+          <toolbar :graph="graph" />
         </div>
         <div id="dagContainer" class="dagContainer">
           <div :id="id"></div>
-          <div class="app-minimap" id="minimapId" />
-          <ul class="handler">
-            <el-tooltip openDelay="500" content="放大" placement="left">
-              <li class="item" @click="zoomIn">
-                <i class="el-icon-zoom-in"></i>
-              </li>
-            </el-tooltip>
-            <el-tooltip openDelay="500" content="缩小" placement="left">
-              <li class="item" @click="zoomOut">
-                <i class="el-icon-zoom-out"></i>
-              </li>
-            </el-tooltip>
-            <el-tooltip openDelay="500" content="实际大小" placement="left">
-              <li class="item" @click="resetSize">
-                <i class="el-icon-c-scale-to-original" />
-              </li>
-            </el-tooltip>
-            <el-tooltip openDelay="500" content="适应画布" placement="left">
-              <li class="item" @click="zoomToFit">
-                <i class="el-icon-s-grid"></i>
-              </li>
-            </el-tooltip>
-            <el-tooltip openDelay="500" content="居中" placement="left">
-              <li class="item" @click="centerContent">
-                <i class="el-icon-aim"></i>
-              </li>
-            </el-tooltip>
-
-            <li class="item"><i class="el-icon-full-screen"></i></li>
-          </ul>
+          <div class="app-minimap" ref="minimap" />
+          <FloatToolbar :graph="graph"></FloatToolbar>
         </div>
       </div>
       <div class="config-pannel">
@@ -85,16 +28,26 @@
 </template>
 
 <script>
-import { Graph, Addon, Shape, DataUri } from "@antv/x6";
+import { Graph, Shape } from "@antv/x6";
 import "@antv/x6-vue-shape";
-import insertCss from "insert-css";
 import { DagEdge } from "../../../config/custom-edge";
-import BaseShape from "../../../config/custom-node/BaseShape.vue";
+import FloatToolbar from "./FloatToolbar.vue";
+import Toolbar from "./Toolbar.vue";
+import { registerComponent } from "./RegisterComponent";
+import {
+  EdgeTools,
+  NodeTools,
+  DefaultEdgeAttrs,
+  SelectedEdgeAttrs,
+} from "./GraphConfig";
 export default {
   name: "Dag",
+  components: {
+    FloatToolbar,
+    Toolbar,
+  },
   props: {
     id: String,
-    barId: String,
     graphData: {
       type: Object,
       required: false,
@@ -109,7 +62,6 @@ export default {
       graph: {},
       stencil: {},
       Shape: Shape,
-      selectLine: [],
       activeName: "first",
     };
   },
@@ -117,13 +69,7 @@ export default {
     init() {
       let dagContainer = document.getElementById("dagContainer");
       let graphContainer = document.getElementById(this.id);
-      let minimapContainer = document.getElementById("minimapId");
-      console.log(
-        "dagContainer: width" +
-          dagContainer.clientWidth +
-          ",height" +
-          dagContainer.clientHeight
-      );
+      let minimapContainer = this.$refs.minimap;
       this.graph = new Graph({
         container: graphContainer,
         width: dagContainer.clientWidth,
@@ -198,230 +144,49 @@ export default {
       if (this.graphData !== {}) {
         this.graph.fromJSON(this.graphData);
       }
+      registerComponent(this.graph, this.$refs.componentWrapper);
 
-      this.stencil = new Addon.Stencil({
-        title: "组件",
-        target: this.graph,
-        stencilGraphWidth: 300,
-        stencilGraphHeight: 600,
-        groups: [
-          {
-            name: "group1",
-            title: "通用组件",
-          },
-        ],
-      });
-
-      document.getElementById(this.barId).appendChild(this.stencil.container);
-      let startNodeComponent = {
-        template: `<base-shape></base-shape>`,
-        components: {
-          BaseShape,
-        },
-      };
-      const ports = {
-        groups: {
-          top: {
-            position: "top",
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: true,
-                stroke: "#5F95FF",
-                strokeWidth: 1,
-                fill: "#fff",
-                style: {
-                  visibility: "hidden",
-                },
-              },
-            },
-          },
-          right: {
-            position: "right",
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: true,
-                stroke: "#5F95FF",
-                strokeWidth: 1,
-                fill: "#fff",
-                style: {
-                  visibility: "hidden",
-                },
-              },
-            },
-          },
-          bottom: {
-            position: "bottom",
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: true,
-                stroke: "#5F95FF",
-                strokeWidth: 1,
-                fill: "#fff",
-                style: {
-                  visibility: "hidden",
-                },
-              },
-            },
-          },
-          left: {
-            position: "left",
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: true,
-                stroke: "#5F95FF",
-                strokeWidth: 1,
-                fill: "#fff",
-                style: {
-                  visibility: "hidden",
-                },
-              },
-            },
-          },
-        },
-        items: [
-          {
-            group: "top",
-          },
-          {
-            group: "right",
-          },
-          {
-            group: "bottom",
-          },
-          {
-            group: "left",
-          },
-        ],
-      };
-      let startNodeShape = {
-        shape: "vue-shape",
-        x: 32,
-        y: 48,
-        width: 180,
-        height: 32,
-        component: startNodeComponent,
-        ports: { ...ports },
-      };
-      Graph.registerVueComponent(
-        "start-node-component",
-        startNodeComponent,
-        true
-      );
-      const startNode = this.graph.createNode(startNodeShape);
-
-      this.stencil.load([startNode], "group1");
-
-      this.graph.on("node:added", ({ node, index, options }) => {
-        console.log(node);
-        console.log(index);
-        console.log(options);
-      });
-      this.graph.on("edge:connected", (args) => {
-        console.log(args);
-        // const edge = args.edge;
-        // const node = args.currentCell;
-        // const elem = args.currentMagnet;
-        // const portId = elem.getAttribute("port");
-
-        // // 触发 port 重新渲染
-        // node.setPortProp(portId, 'connected', true)
-        // // 更新连线样式
-        // edge.attr({
-        //     line: {
-        //         strokeDasharray: '',
-        //     },
-        // })
-      });
       this.graph.on("node:mouseenter", ({ node }) => {
-        console.log("mouse mouseenter");
         this.changePortsVisible(true);
+        // console.log(node);
+        // let ports = node.getPorts();
+        // ports.forEach((port) => {
+        //   node.portProp(port.id, "attrs/circle/style", { visibility: "true" });
+        // });
         // 添加删除
-        node.addTools({
-          name: "button-remove",
-          args: {
-            x: 0,
-            y: 0,
-            offset: { x: 6, y: 5 },
-          },
-        });
+        node.addTools(NodeTools);
       });
 
       this.graph.on("node:mouseleave", ({ node }) => {
         this.changePortsVisible(false);
+        // let ports = node.getPorts();
+        // ports.forEach((port) => {
+        //   node.portProp(port.id, "attrs/circle/style", {
+        //     visibility: "hidden",
+        //   });
+        // });
         // 移除删除
-        node.removeTools();
+        if (!this.graph.isSelected(node)) {
+          node.removeTools();
+        }
       });
+
       this.graph.on("edge:mouseenter", ({ edge }) => {
-        edge.addTools([
-          {
-            name: "source-arrowhead",
-
-            args: {
-              tagName: "circle",
-              attrs: {
-                r: 6,
-                fill: "#ffa940",
-                strokeWidth: 0,
-                cursor: "move",
-              },
-            },
-          },
-          {
-            name: "target-arrowhead",
-            args: {
-              attrs: {
-                fill: "#3199FF",
-                cursor: "move",
-              },
-            },
-          },
-          {
-            name: "button-remove",
-            args: {
-              distance: -30,
-            },
-          },
-        ]);
+        edge.addTools(EdgeTools);
       });
-
+      //鼠标离开边时，如果被选中了则不移除tools
       this.graph.on("edge:mouseleave", ({ edge }) => {
-        edge.removeTools();
+        if (!this.graph.isSelected(edge)) {
+          edge.removeTools();
+        }
       });
-      // 选择连接线(边)事件
-      this.graph.on("selection:changed", ({ added, removed }) => {
-        this.selectLine = added;
-        added.forEach((cell) => {
-          const args = { size: 12 };
-          cell.setAttrs({
-            line: {
-              sourceMarker: {
-                args,
-              },
-              targetMarker: {
-                args,
-              },
-              strokeWidth: 2,
-            },
-          });
-        });
-        removed.forEach((cell) => {
-          const args = { size: 8 };
-          cell.setAttrs({
-            line: {
-              sourceMarker: {
-                args,
-              },
-              targetMarker: {
-                args,
-              },
-              strokeWidth: 1,
-            },
-          });
-        });
+      this.graph.on("edge:selected", ({ edge }) => {
+        edge.addTools(EdgeTools);
+        edge.setAttrs(SelectedEdgeAttrs);
+      });
+      this.graph.on("edge:unselected", ({ edge }) => {
+        edge.removeTools();
+        edge.setAttrs(DefaultEdgeAttrs);
       });
 
       //删除选中的内容
@@ -430,6 +195,7 @@ export default {
           item.remove();
         }
       });
+      //复制
       this.graph.bindKey("ctrl+c", () => {
         const cells = this.graph.getSelectedCells();
         if (cells.length) {
@@ -437,6 +203,7 @@ export default {
         }
         return false;
       });
+      //剪切
       this.graph.bindKey("ctrl+x", () => {
         const cells = this.graph.getSelectedCells();
         if (cells.length) {
@@ -444,6 +211,7 @@ export default {
         }
         return false;
       });
+      //粘贴
       this.graph.bindKey("ctrl+v", () => {
         if (!this.graph.isClipboardEmpty()) {
           const cells = this.graph.paste({ offset: 32 });
@@ -453,36 +221,7 @@ export default {
         return false;
       });
     },
-    runHandle() {
-      const edges = this.graph.getEdges();
-      edges.forEach((edge) => {
-        edge.attr({
-          line: {
-            strokeDasharray: "5",
-            style: {
-              animation: "ant-line 30s infinite linear",
-            },
-          },
-        });
-      });
-      insertCss(`
-                        @keyframes ant-line {
-                            to {
-                                stroke-dashoffset: -1000
-                            }
-                        }
-                `);
-    },
-    stopHandle() {
-      const edges = this.graph.getEdges();
-      edges.forEach((edge) => {
-        edge.attr({
-          line: {
-            strokeDasharray: "",
-          },
-        });
-      });
-    },
+
     changePortsVisible(visible) {
       const ports = document
         .getElementById(this.id)
@@ -490,38 +229,6 @@ export default {
       for (let i = 0, len = ports.length; i < len; i = i + 1) {
         ports[i].style.visibility = visible ? "visible" : "hidden";
       }
-    },
-    exportPng() {
-      this.graph.toPNG((dataUri) => {
-        // 下载
-        DataUri.downloadDataUri(dataUri, "chart.png");
-      });
-    },
-
-    valFunc() {
-      console.log(212121);
-    },
-
-    centerContent() {
-      this.graph.centerContent();
-    },
-    zoomIn() {
-      this.graph.zoomTo(this.graph.zoom() + 0.1);
-    },
-    zoomOut() {
-      this.graph.zoomTo(this.graph.zoom() - 0.1);
-    },
-    zoomToFit() {
-      this.graph.zoomToFit();
-    },
-
-    resetSize() {
-      this.graph.zoomTo(1);
-    },
-
-    getJSONData() {
-      this.$message("按f12查看控制台");
-      console.log(this.graph.toJSON());
     },
   },
   mounted() {
@@ -559,11 +266,29 @@ export default {
   overflow: hidden;
 }
 
-.canvasToolbar {
+.componentWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.pannel-toolbar {
+  height: 36px;
+  overflow: visible;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background-color: #f7f9fb;
 }
 
-.canvasToolbar .x6-toolbar {
+.pannel-toolbar .pannel-toolbar-title {
+  height: 36px;
+  line-height: 36px;
+  text-align: left;
+  padding: 0 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.pannel-toolbar .x6-toolbar {
   height: 36px !important;
   overflow: visible;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
@@ -580,7 +305,7 @@ export default {
   overflow: hidden;
 }
 
-.canvasToolbar .x6-toolbar .x6-toolbar-content {
+.pannel-toolbar .x6-toolbar .x6-toolbar-content {
   overflow: visible;
 }
 .x6-toolbar-content {
@@ -590,16 +315,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   overflow: hidden;
-}
-
-.x6-toolbar-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  overflow: hidden;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 0px 10px;
 }
 
 .x6-toolbar-content-extras,
@@ -612,17 +327,11 @@ export default {
   flex-direction: row;
 }
 
-.x6-toolbar-content-extras,
-.x6-toolbar-content-inner,
-.x6-toolbar-group,
-.x6-toolbar-item,
-.x6-toolbar-item-icon,
-.x6-toolbar-item-text {
-  display: flex;
-  flex-direction: row;
+.x6-toolbar-item {
+  cursor: pointer;
 }
 
-.canvasToolbar .x6-toolbar .x6-toolbar-content .x6-toolbar-item {
+.pannel-toolbar .x6-toolbar .x6-toolbar-content .x6-toolbar-item {
   margin: 6px 6px !important;
   padding: 0 6px !important;
 }
@@ -652,7 +361,7 @@ export default {
   flex-direction: row;
 }
 
-.x6-pannel {
+.canvas-pannel {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -680,7 +389,7 @@ export default {
   right: 20px;
 }
 
-.handler {
+.float-toolbar {
   position: absolute;
   top: 61px;
   right: 14px;
@@ -697,13 +406,13 @@ export default {
   box-shadow: 0 0 20px rgb(0 0 0 / 1%);
 }
 
-.handler .item {
+.float-toolbar .item {
   text-align: center;
   cursor: pointer;
   padding: 8px;
 }
 
-.handler .item:hover {
+.float-toolbar .item:hover {
   background-color: dodgerblue;
   color: #fff;
 }
