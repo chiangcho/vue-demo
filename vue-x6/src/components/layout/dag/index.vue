@@ -133,7 +133,7 @@ export default {
           rubberNode: true,
           modifiers: "ctrl", //按住ctrl点击鼠标框选
           rubberband: true,
-          showNodeSelectionBox: true,
+          // showNodeSelectionBox: true,
         },
         minimap: {
           enabled: true,
@@ -158,7 +158,8 @@ export default {
       });
 
       this.graph.on("node:mouseleave", ({ node }) => {
-        this.changePortsVisible(false);
+        if (this.graph.getSelectedCells().length == 0)
+          this.changePortsVisible(false);
         // let ports = node.getPorts();
         // ports.forEach((port) => {
         //   node.portProp(port.id, "attrs/circle/style", {
@@ -187,6 +188,9 @@ export default {
       this.graph.on("edge:unselected", ({ edge }) => {
         edge.removeTools();
         edge.setAttrs(DefaultEdgeAttrs);
+      });
+      this.graph.on("blank:click", () => {
+        this.changePortsVisible(false);
       });
 
       //删除选中的内容
@@ -286,12 +290,6 @@ export default {
   padding: 0 10px;
   font-size: 16px;
   font-weight: bold;
-}
-
-.pannel-toolbar .x6-toolbar {
-  height: 36px !important;
-  overflow: visible;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .canvas-pannel {
