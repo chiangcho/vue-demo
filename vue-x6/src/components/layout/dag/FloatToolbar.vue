@@ -61,5 +61,32 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+.float-toolbar {
+  position: absolute;
+  top: 61px;
+  right: 14px;
+  z-index: 99;
+  width: 32px;
+  margin: 0;
+  padding: 3px 0;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 16px;
+  list-style-type: none;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 3px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 1%);
+}
+
+.float-toolbar .item {
+  text-align: center;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.float-toolbar .item:hover {
+  background-color: dodgerblue;
+  color: #fff;
+}
 </style>

@@ -293,73 +293,6 @@ export default {
   overflow: visible;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
-.x6-toolbar.x6-toolbar-hover-effect {
-  height: 32px;
-}
-.x6-toolbar {
-  display: flex;
-  flex-direction: row;
-  height: 28px;
-  margin: 0;
-  padding: 0 0 0 4px;
-  overflow: hidden;
-}
-
-.pannel-toolbar .x6-toolbar .x6-toolbar-content {
-  overflow: visible;
-}
-.x6-toolbar-content {
-  display: flex;
-  flex: 1 1;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  overflow: hidden;
-}
-
-.x6-toolbar-content-extras,
-.x6-toolbar-content-inner,
-.x6-toolbar-group,
-.x6-toolbar-item,
-.x6-toolbar-item .x6-toolbar-item-icon,
-.x6-toolbar-item-text {
-  display: flex;
-  flex-direction: row;
-}
-
-.x6-toolbar-item {
-  cursor: pointer;
-}
-
-.pannel-toolbar .x6-toolbar .x6-toolbar-content .x6-toolbar-item {
-  margin: 6px 6px !important;
-  padding: 0 6px !important;
-}
-.x6-toolbar.x6-toolbar-hover-effect .x6-toolbar-item {
-  margin: 4px;
-  padding: 0 4px;
-  color: #595959;
-  cursor: pointer;
-}
-
-.x6-toolbar-item-icon {
-  font-size: 14px;
-  transition: transform 50ms ease;
-}
-.x6-toolbar-item-icon,
-.x6-toolbar-item-text {
-  align-content: center;
-  align-items: center;
-}
-.x6-toolbar-content-extras,
-.x6-toolbar-content-inner,
-.x6-toolbar-group,
-.x6-toolbar-item,
-.x6-toolbar-item-icon,
-.x6-toolbar-item-text {
-  display: flex;
-  flex-direction: row;
-}
 
 .canvas-pannel {
   position: relative;
@@ -387,33 +320,5 @@ export default {
   position: absolute;
   bottom: 20px;
   right: 20px;
-}
-
-.float-toolbar {
-  position: absolute;
-  top: 61px;
-  right: 14px;
-  z-index: 99;
-  width: 32px;
-  margin: 0;
-  padding: 3px 0;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 16px;
-  list-style-type: none;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-radius: 3px;
-  box-shadow: 0 0 20px rgb(0 0 0 / 1%);
-}
-
-.float-toolbar .item {
-  text-align: center;
-  cursor: pointer;
-  padding: 8px;
-}
-
-.float-toolbar .item:hover {
-  background-color: dodgerblue;
-  color: #fff;
 }
 </style>

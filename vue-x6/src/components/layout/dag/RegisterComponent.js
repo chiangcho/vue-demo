@@ -5,7 +5,7 @@ import { ports } from "./GraphConfig";
 export function registerComponent(graph, element) {
   let stencil = new Addon.Stencil({
     title: "组件",
-    target: this.graph,
+    target: graph,
     stencilGraphWidth: 300,
     stencilGraphHeight: 600,
     groups: [
@@ -15,7 +15,7 @@ export function registerComponent(graph, element) {
       },
     ],
   });
-  element.appendChild(this.stencil.container);
+  element.appendChild(stencil.container);
   let baseNodeComponent = {
     template: `<base-shape></base-shape>`,
     components: {
@@ -32,7 +32,7 @@ export function registerComponent(graph, element) {
     component: baseNodeComponent,
     ports: { ...ports },
   };
-  Graph.registerVueComponent("start-node-component", baseNodeComponent, true);
+  Graph.registerVueComponent("base-node-component", baseNodeComponent, true);
   const baseNode = graph.createNode(baseNodeShape);
 
   stencil.load([baseNode], "group1");

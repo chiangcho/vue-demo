@@ -77,5 +77,61 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+.x6-toolbar.x6-toolbar-hover-effect {
+  height: 32px;
+}
+.x6-toolbar {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  padding: 0 0 0 4px;
+  height: 36px;
+  overflow: visible;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.x6-toolbar-content {
+  display: flex;
+  flex: 1 1;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.x6-toolbar-content-extras,
+.x6-toolbar-content-inner,
+.x6-toolbar-group,
+.x6-toolbar-item,
+.x6-toolbar-item .x6-toolbar-item-icon,
+.x6-toolbar-item-text {
+  display: flex;
+  flex-direction: row;
+}
+
+.x6-toolbar-item {
+  cursor: pointer;
+}
+
+.x6-toolbar .x6-toolbar-content .x6-toolbar-item {
+  margin: 6px 6px !important;
+  padding: 0 6px !important;
+}
+.x6-toolbar.x6-toolbar-hover-effect .x6-toolbar-item {
+  margin: 4px;
+  padding: 0 4px;
+  color: #595959;
+  cursor: pointer;
+}
+
+.x6-toolbar-item-icon {
+  font-size: 14px;
+  transition: transform 50ms ease;
+}
+.x6-toolbar-item-icon,
+.x6-toolbar-item-text {
+  align-content: center;
+  align-items: center;
+}
 </style>
