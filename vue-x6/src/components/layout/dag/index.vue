@@ -12,7 +12,7 @@
           <toolbar :graph="graph" />
         </div>
         <div id="dagContainer" class="dagContainer">
-          <div :id="id"></div>
+          <div :id="id" style="flex: 1;"></div>
           <div class="app-minimap" ref="minimap" />
           <FloatToolbar :graph="graph"></FloatToolbar>
         </div>
@@ -67,13 +67,14 @@ export default {
   },
   methods: {
     init() {
-      let dagContainer = document.getElementById("dagContainer");
+      // let dagContainer = document.getElementById("dagContainer");
       let graphContainer = document.getElementById(this.id);
       let minimapContainer = this.$refs.minimap;
       this.graph = new Graph({
         container: graphContainer,
-        width: dagContainer.clientWidth,
-        height: dagContainer.clientHeight,
+        // width: dagContainer.clientWidth,
+        // height: dagContainer.clientHeight,
+        autoResize: true,
         panning: {
           enabled: true,
           eventTypes: ["leftMouseDown", "mouseWheel"],
@@ -310,7 +311,8 @@ export default {
 .dagContainer {
   position: relative;
   background-color: #f7f7fa;
-  flex-grow: 1;
+  display: flex;
+  flex: 1;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 

@@ -1,7 +1,6 @@
 <template>
-  <div class="hello">
-    <el-container style="height: 100%; border: 1px solid #eee">
-      <el-header class="header">
+  <div class="workspace-wrapper">
+      <div class="header">
         <div class="header-left">
           <div class="header-left-icon">
             <i class="el-icon-share" style="font-size: 20px" />
@@ -9,14 +8,11 @@
           <span class="header-left-title">批量建模</span>
         </div>
         <div class="header-right"></div>
-      </el-header>
+      </div>
 
-      <el-main class="content">
-        <div style="position: relative; height: 100%">
+      <div class="content">
           <dag id="id1" barId="bar1" />
-        </div>
-      </el-main>
-    </el-container>
+      </div>
   </div>
 </template>
 
@@ -38,6 +34,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.workspace-wrapper {
+  height: 100%; border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+}
 .header {
   z-index: 99;
   display: flex;
@@ -75,6 +76,9 @@ export default {
 }
 
 .content {
+  display: flex;
   padding: 0px;
+  height: 100%;
+  position: relative;
 }
 </style>
