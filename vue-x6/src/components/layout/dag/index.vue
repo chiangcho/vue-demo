@@ -12,9 +12,18 @@
           <toolbar :graph="graph" />
         </div>
         <div id="dagContainer" class="dagContainer">
-          <div :id="id" style="flex: 1;"></div>
+          <div :id="id" style="flex: 1"></div>
           <div class="app-minimap" ref="minimap" />
           <FloatToolbar :graph="graph"></FloatToolbar>
+          <FindWidget
+            ref="findWidget"
+            :results="searchResults"
+            :total="searchResultsCount"
+            :currentIndex="searchIndex"
+            @search="search"
+            @next="next"
+            @previous="previous"
+          />
         </div>
       </div>
       <div class="config-pannel">
@@ -33,6 +42,7 @@ import "@antv/x6-vue-shape";
 import { DagEdge } from "../../../config/custom-edge";
 import FloatToolbar from "./FloatToolbar.vue";
 import Toolbar from "./Toolbar.vue";
+import FindWidget from "./FindWidget.vue";
 import { registerComponent } from "./RegisterComponent";
 import {
   EdgeTools,
@@ -45,6 +55,7 @@ export default {
   components: {
     FloatToolbar,
     Toolbar,
+    FindWidget,
   },
   props: {
     id: String,
@@ -63,6 +74,9 @@ export default {
       stencil: {},
       Shape: Shape,
       activeName: "first",
+      searchResults: [],
+      searchResultsCount: 0,
+      searchIndex: 0,
     };
   },
   methods: {
@@ -225,6 +239,11 @@ export default {
         }
         return false;
       });
+
+      this.graph.bindKey("ctrl+f", () => {
+        this.$refs.findWidget.show();
+        return false;
+      });
     },
 
     changePortsVisible(visible) {
@@ -234,6 +253,28 @@ export default {
       for (let i = 0, len = ports.length; i < len; i = i + 1) {
         ports[i].style.visibility = visible ? "visible" : "hidden";
       }
+    },
+    search(searchContent) {
+      this.searchResults = [];
+      this.graph.cleanSelection();
+      this.searchResultsCount = 0;
+      if (searchContent) {
+        let allCells = this.graph.getCells();
+
+        for (const cell of allCells) {
+          if (cell.getData().name.indexOf(searchContent) >= 0) {
+            this.searchResults.push(cell);
+            this.graph.select(cell);
+          }
+        }
+        this.searchResultsCount = this.searchResults.length;
+      }
+    },
+    next(index) {
+      this.graph.centerCell(this.searchResults[index]);
+    },
+    previous(index) {
+      this.graph.centerCell(this.searchResults[index]);
     },
   },
   mounted() {

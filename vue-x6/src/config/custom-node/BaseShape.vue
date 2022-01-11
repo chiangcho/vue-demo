@@ -1,7 +1,10 @@
 <template>
   <div class="node-element">
     <i class="el-icon-s-operation" />
-    <div class="notation">{{ name }}</div>
+    <div class="notation" v-if="editable">
+      <el-input v-model="data.name"></el-input>
+    </div>
+    <div class="notation" v-else @dblclick="edit">{{ data.name }}</div>
   </div>
 </template>
 
@@ -13,6 +16,27 @@ export default {
       type: String,
       default: "test",
     },
+  },
+  inject: ["getGraph", "getNode"],
+  data() {
+    return {
+      id: "",
+      data: { name: "" },
+      editable: false,
+    };
+  },
+  methods: {
+    edit() {
+      this.editable = true;
+    },
+  },
+  created() {
+    const node = this.getNode();
+    this.id = node.id;
+    this.data.name = this.name;
+    let data = { ...this.data, ...node.data };
+    node.setData(data);
+    this.data = node.getData();
   },
 };
 </script>
