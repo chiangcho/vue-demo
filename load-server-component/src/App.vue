@@ -1,17 +1,17 @@
 <template>
   <div id="app">
     <div class="card">
-      <header class="header">
+      <div class="header">
         <div class="title">加载外部组件</div>
-      </header>
+      </div>
       <div class="card-content">
         <HelloWorld msg="Welcome to Your Vue.js App" />
       </div>
     </div>
     <div class="card">
-      <header class="header">
+      <div class="header">
         <div class="title">加载服务端组件</div>
-      </header>
+      </div>
       <div class="card-content">
         <button @click="switchAsyncComponent">
           {{ showAsync ? "显示服务端组件" : "隐藏服务端组件" }}
@@ -20,11 +20,19 @@
       </div>
     </div>
     <div class="card">
-      <header class="header">
-        <div class="title">加载服务端组件</div>
-      </header>
+      <div class="header">
+        <div class="title" style="color: red">加载服务端组件</div>
+      </div>
       <div class="card-content">
         <button @click="getCourses">请求后台数据例子</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="header">
+        <div class="title">导出为word</div>
+      </div>
+      <div class="card-content">
+        <button @click="exportWord">导出word</button>
       </div>
     </div>
   </div>
@@ -67,6 +75,35 @@ export default {
       getCourses().then(res => {
         console.log(res.result);
       });
+    },
+    exportWord() {
+      var content = document.getElementById("app").innerHTML;
+      var styles = document.getElementsByTagName("style");
+      let stylecss = "";
+      console.log(styles);
+      for (const style of styles) {
+        stylecss = stylecss + style.outerHTML;
+      }
+      let html = `<!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+                    <title>word</title>
+
+                    ${stylecss}
+
+
+                </head>
+                <body>
+                    <div class="resume_preview_page" style="margin:0 auto;width:1200px">
+                    ${content}
+                    </div>
+                </body>
+                </html>`;
+      console.log(html);
+      var converted = window.htmlDocx.asBlob(html, { orientation: true });
+      window.saveAs(converted, "test.docx");
     }
   }
 };
